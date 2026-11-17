@@ -3,46 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AS PvP TierList • Official Competitive Rankings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>AS PvP TierList • Leaderboard</title>
     <style>
-        :root {
-            --bg-main: #090b10;
-            --card-bg: rgba(22, 27, 38, 0.75);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --primary: #3b82f6;
-            --secondary: #8b5cf6;
-            --accent: #10b981;
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --gold: #fbbf24;
-            --silver: #e2e8f0;
-            --bronze: #f97316;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #090b10; color: #fff; min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { text-align: center; padding: 30px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
+        header h1 { font-size: 2.5rem; background: linear-gradient(135deg, #3b82f6, #a855f7, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        header p { color: #94a3b8; font-size: 1rem; }
+        
+        .controls { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; background: #131722; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+        .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tab-btn { background: #1e2530; color: #94a3b8; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .tab-btn.active, .tab-btn:hover { background: #3b82f6; color: #fff; box-shadow: 0 0 15px rgba(59,130,246,0.4); }
+        
+        .search-box { background: #090b10; border: 1px solid rgba(255,255,255,0.15); padding: 10px 15px; border-radius: 8px; color: #fff; width: 100%; max-width: 250px; outline: none; }
+        
+        .player-card { background: #131722; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; transition: 0.2s; }
+        .player-card:hover { transform: translateY(-2px); border-color: rgba(168,85,247,0.4); background: #181f2e; }
+        
+        .player-left { display: flex; align-items: center; gap: 16px; }
+        .rank { font-size: 1.3rem; font-weight: 900; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #1e2530; color: #94a3b8; }
+        .rank-1 { background: #fbbf24; color: #000; box-shadow: 0 0 15px rgba(251,191,36,0.5); }
+        .rank-2 { background: #cbd5e1; color: #000; }
+        .rank-3 { background: #f97316; color: #fff; }
+        
+        .avatar { width: 45px; height: 45px; border-radius: 8px; background: #1e2530; }
+        .info h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 3px; }
+        .points { font-size: 0.9rem; color: #94a3b8; }
+        .points span { color: #34d399; font-weight: 700; }
+        
+        .tiers { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge { padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    </style>
+</head>
+<body>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-        }
+<div class="container">
+    <header>
+        <h1>⚔️ AS PvP TierList</h1>
+        <p>Official Competitive Rankings & Leaderboard</p>
+    </header>
 
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-            padding-bottom: 60px;
-        }
+    <div class="controls">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterMode('overall', this)">🏆 Overall</button>
+            <button class="tab-btn" onclick="filterMode('Sword', this)">⚔️ Sword</button>
+            <button class="tab-btn" onclick="filterMode('Axe', this)">🪓 Axe</button>
+            <button class="tab-btn" onclick="filterMode('Mace', this)">🔨 Mace</button>
+        </div>
+        <input type="text" class="search-box" id="search" placeholder="Search player..." onkeyup="render()">
+    </div>
 
-        /* Ambient Colorful Background Glows */
-        .bg-glow-1, .bg-glow-2 {
-            position: fixed;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            filter: blur(130px);
-            z-index: -1;
-            opacity: 0.35;
-            pointer-events
+    <div id="leaderboard"></div>
+</div>
+
+<script>
+    const pointsMap = { "HT1": 60, "LT1": 45, "HT2": 30, "LT2": 20, "HT3": 10, "LT3": 6, "HT4": 4, "LT4": 3 };
+    
+    const players = [
+        { ign: "Death2

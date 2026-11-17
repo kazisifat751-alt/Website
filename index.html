@@ -35,7 +35,6 @@
         }
         header p { color: #94a3b8; font-size: 1.05rem; }
 
-        /* Controls & View Switcher Bar */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -59,3 +58,267 @@
             background: #1e2530;
             color: #94a3b8;
             border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover, .btn.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .search-box {
+            background: #090b10;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 10px 16px;
+            border-radius: 10px;
+            color: #fff;
+            width: 100%;
+            max-width: 250px;
+            outline: none;
+        }
+
+        /* Leaderboard View */
+        .leaderboard-view { display: flex; flex-direction: column; gap: 12px; }
+        .player-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.2s;
+        }
+        .player-card:hover { transform: translateY(-2px); border-color: rgba(139,92,246,0.5); background: #181f2e; }
+        
+        .player-left { display: flex; align-items: center; gap: 16px; }
+        .rank {
+            font-size: 1.3rem; font-weight: 900; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px; background: #1e2530; color: #94a3b8;
+        }
+        .rank-1 { background: #fbbf24; color: #000; box-shadow: 0 0 15px rgba(251,191,36,0.4); }
+        .rank-2 { background: #cbd5e1; color: #000; }
+        .rank-3 { background: #f97316; color: #fff; }
+
+        .avatar { width: 50px; height: 50px; border-radius: 10px; background: #1e2530; border: 1px solid rgba(255,255,255,0.1); }
+        .info h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 3px; }
+        .points { font-size: 0.9rem; color: #94a3b8; }
+        .points span { color: #34d399; font-weight: 700; }
+
+        .tiers-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge {
+            padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700;
+            background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Tier Columns View */
+        .columns-view { display: none; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        .tier-column {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .tier-header {
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            text-align: center;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tier-1-header { color: #fbbf24; border-bottom: 2px solid #fbbf24; }
+        .tier-2-header { color: #c084fc; border-bottom: 2px solid #c084fc; }
+        .tier-3-header { color: #60a5fa; border-bottom: 2px solid #60a5fa; }
+        .tier-4-header { color: #34d399; border-bottom: 2px solid #34d399; }
+
+        .tier-players-list { padding: 12px; display: flex; flex-direction: column; gap: 8px; max-height: 450px; overflow-y: auto; }
+        .column-player-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #090b10;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .column-player-item img { width: 36px; height: 36px; border-radius: 8px; }
+        .column-player-item span { font-weight: 700; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>⚔️ AS PvP TierList</h1>
+        <p>Official Competitive Rankings & Columns</p>
+    </header>
+
+    <div class="controls">
+        <div class="tabs" id="modeTabs">
+            <button class="btn active" onclick="setMode('overall', this)">🏆 Overall</button>
+            <button class="btn" onclick="setMode('Sword', this)">⚔️ Sword</button>
+            <button class="btn" onclick="setMode('Axe', this)">🪓 Axe</button>
+            <button class="btn" onclick="setMode('Mace', this)">🔨 Mace</button>
+            <button class="btn" onclick="setMode('NethPot', this)">🧪 NethPot</button>
+        </div>
+        
+        <div class="view-switch">
+            <button class="btn active" id="lbViewBtn" onclick="switchView('leaderboard')">📊 Leaderboard</button>
+            <button class="btn" id="colViewBtn" onclick="switchView('columns')">🧱 Tier Columns</button>
+        </div>
+
+        <input type="text" class="search-box" id="search" placeholder="Search player..." onkeyup="render()">
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="mainContent"></div>
+</div>
+
+<script>
+    const pointsMap = { 
+        "HT1": 60, "LT1": 45, 
+        "HT2": 30, "LT2": 20, 
+        "HT3": 10, "LT3": 6, 
+        "HT4": 4, "LT4": 3,
+        "HT5": 2, "LT5": 1 
+    };
+    
+    // এখানে সরাসরি প্লেয়ারদের তালিকা দেওয়া আছে। নতুন প্লেয়ার যোগ করতে চাইলে নিচের ব্র্যাকেটের ভেতরে এভাবে অ্যাড করতে পারবে।
+    const players = [
+        {
+            ign: "Death24",
+            tiers: { "Sword": "LT1", "Axe": "HT2", "Mace": "LT2" }
+        },
+        {
+            ign: "Sifat",
+            tiers: { "Sword": "HT2", "Axe": "LT1", "NethPot": "HT3" }
+        },
+        {
+            ign: "Technoblade",
+            tiers: { "Sword": "HT1", "Axe": "HT1" }
+        }
+    ];
+
+    let currentMode = 'overall';
+    let currentView = 'leaderboard';
+
+    function setMode(mode, btn) {
+        currentMode = mode;
+        document.querySelectorAll('#modeTabs .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+    }
+
+    function switchView(view) {
+        currentView = view;
+        document.getElementById('lbViewBtn').classList.toggle('active', view === 'leaderboard');
+        document.getElementById('colViewBtn').classList.toggle('active', view === 'columns');
+        render();
+    }
+
+    function render() {
+        const query = document.getElementById('search').value.toLowerCase();
+        const container = document.getElementById('mainContent');
+        container.innerHTML = '';
+
+        if (currentView === 'leaderboard') {
+            let list = players.map(p => {
+                let pts = 0;
+                if (currentMode === 'overall') {
+                    for (let m in p.tiers) pts += pointsMap[p.tiers[m]] || 0;
+                } else {
+                    pts = pointsMap[p.tiers[currentMode]] || 0;
+                }
+                return { ...p, pts };
+            }).filter(p => p.pts > 0 && p.ign.toLowerCase().includes(query))
+              .sort((a, b) => b.pts - a.pts);
+
+            if (list.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:30px;">No players found.</p>';
+                return;
+            }
+
+            let wrapper = document.createElement('div');
+            wrapper.className = 'leaderboard-view';
+
+            list.forEach((p, idx) => {
+                let rank = idx + 1;
+                let rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
+                
+                let badges = '';
+                for (let m in p.tiers) {
+                    if (currentMode === 'overall' || currentMode === m) {
+                        badges += `<div class="badge">${m}: ${p.tiers[m]}</div>`;
+                    }
+                }
+
+                wrapper.innerHTML += `
+                    <div class="player-card">
+                        <div class="player-left">
+                            <div class="rank ${rankClass}">#${rank}</div>
+                            <img class="avatar" src="https://mc-heads.net/avatar/${p.ign}/48" onerror="this.src='https://mc-heads.net/avatar/Steve/48'">
+                            <div class="info">
+                                <h3>${p.ign}</h3>
+                                <div class="points">Points: <span>${p.pts}</span></div>
+                            </div>
+                        </div>
+                        <div class="tiers-badges">${badges}</div>
+                    </div>
+                `;
+            });
+            container.appendChild(wrapper);
+
+        } else {
+            if (currentMode === 'overall') {
+                container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:30px;">Please select a specific gamemode (Sword, Axe, etc.) to view Tier Columns.</p>';
+                return;
+            }
+
+            const tiersList = ["HT1", "LT1", "HT2", "LT2", "HT3", "LT3", "HT4", "LT4"];
+            let wrapper = document.createElement('div');
+            wrapper.className = 'columns-view';
+            wrapper.style.display = 'grid';
+
+            tiersList.forEach(tier => {
+                let matchedPlayers = players.filter(p => p.tiers[currentMode] === tier && p.ign.toLowerCase().includes(query));
+                
+                let headerClass = tier.startsWith('HT1') || tier.startsWith('LT1') ? 'tier-1-header' :
+                                  tier.startsWith('HT2') || tier.startsWith('LT2') ? 'tier-2-header' :
+                                  tier.startsWith('HT3') || tier.startsWith('LT3') ? 'tier-3-header' : 'tier-4-header';
+
+                let playersHTML = matchedPlayers.length > 0 ? matchedPlayers.map(p => `
+                    <style>
+                        /* additional inline support */
+                    </style>
+                    <div class="column-player-item">
+                        <img src="https://mc-heads.net/avatar/${p.ign}/36" onerror="this.src='https://mc-heads.net/avatar/Steve/36'">
+                        <span>${p.ign}</span>
+                    </div>
+                `).join('') : '<p style="color:#64748b; font-size:0.9rem; text-align:center; padding:15px;">No players</p>';
+
+                wrapper.innerHTML += `
+                    <div class="tier-column">
+                        <div class="tier-header ${headerClass}">Tier ${tier}</div>
+                        <div class="tier-players-list">${playersHTML}</div>
+                    </div>
+                `;
+            });
+
+            container.appendChild(wrapper);
+        }
+    }
+
+    render();
+</script>
+
+</body>
+</html>

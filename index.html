@@ -6,21 +6,20 @@
     <title>AS PvP TierList</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #090b10; color: #fff; padding: 15px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        body { background: #0b0f17; color: #fff; padding: 15px; }
+        .container { max-width: 1400px; margin: 0 auto; }
         
-        header { text-align: center; padding: 25px 0; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
-        h1 { color: #f59e0b; font-size: 2.4rem; margin-bottom: 5px; }
+        header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+        h1 { color: #f59e0b; font-size: 2.2rem; margin-bottom: 5px; }
         p { color: #94a3b8; font-size: 0.95rem; }
 
-        /* Controls & View Switcher */
-        .controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; background: #131722; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+        .controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 25px; background: #131722; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
         .tabs, .views { display: flex; gap: 6px; flex-wrap: wrap; }
         
-        .btn { background: #1e2530; color: #94a3b8; border: 1px solid rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
+        .btn { background: #1e2530; color: #94a3b8; border: 1px solid rgba(255,255,255,0.08); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
         .btn.active, .btn:hover { background: #3b82f6; color: #fff; border-color: #3b82f6; }
 
-        /* Leaderboard View Style */
+        /* Leaderboard View */
         .leaderboard-list { display: flex; flex-direction: column; gap: 10px; }
         .player-card { background: #131722; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
         .player-left { display: flex; align-items: center; gap: 14px; }
@@ -32,15 +31,66 @@
         .badges { display: flex; gap: 6px; flex-wrap: wrap; }
         .badge { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; color: #60a5fa; font-weight: bold; }
 
-        /* MCTiers Column View Style */
-        .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-        .tier-column { background: #131722; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; }
-        .tier-header { padding: 12px; text-align: center; font-weight: bold; font-size: 1.05rem; background: rgba(255,255,255,0.02); border-bottom: 2px solid #3b82f6; color: #60a5fa; }
-        .tier-players { padding: 10px; display: flex; flex-direction: column; gap: 8px; max-height: 450px; overflow-y: auto; }
-        .tier-row { display: flex; align-items: center; gap: 10px; background: #0b0f17; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); }
-        .tier-row img { width: 32px; height: 32px; border-radius: 6px; }
-        .tier-row span { font-size: 0.9rem; font-weight: 600; }
-        .empty { color: #475569; text-align: center; font-size: 0.85rem; padding: 15px; }
+        /* MCTiers Exact Vertical Columns View */
+        .tier-columns-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            align-items: flex-start;
+        }
+        .tier-column {
+            min-width: 260px;
+            flex: 1;
+            background: #111622;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .tier-header {
+            padding: 14px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 2px solid #3b82f6;
+            color: #60a5fa;
+            letter-spacing: 0.5px;
+        }
+        .tier-players-list {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .tier-player-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #1a2130;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .tier-player-row img {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #000;
+        }
+        .tier-player-row span {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .empty-slot {
+            color: #475569;
+            text-align: center;
+            font-size: 0.85rem;
+            padding: 15px;
+        }
     </style>
 </head>
 <body>
@@ -48,7 +98,7 @@
 <div class="container">
     <header>
         <h1>⚔️ AS PvP TierList</h1>
-        <p>Official Competitive Rankings & Columns</p>
+        <p>Official Competitive Rankings & Tier Columns</p>
     </header>
 
     <div class="controls">
@@ -143,27 +193,27 @@
                 return;
             }
 
-            const tiers = ["HT1", "LT1", "HT2", "LT2", "HT3", "LT3"];
-            let grid = document.createElement('div');
-            grid.className = 'tier-grid';
+            const tiers = ["HT1", "LT1", "HT2", "LT2", "HT3", "LT3", "HT4", "LT4"];
+            let containerDiv = document.createElement('div');
+            containerDiv.className = 'tier-columns-container';
 
             tiers.forEach(tier => {
                 let filtered = playersData.filter(p => p.tiers[currentMode] === tier);
-                let rows = filtered.length > 0 ? filtered.map(p => `
-                    <div class="tier-row">
-                        <img src="https://mc-heads.net/avatar/${p.ign}/32" onerror="this.src='https://mc-heads.net/avatar/Steve/32'">
+                let rowsHTML = filtered.length > 0 ? filtered.map(p => `
+                    <div class="tier-player-row">
+                        <img src="https://mc-heads.net/avatar/${p.ign}/36" onerror="this.src='https://mc-heads.net/avatar/Steve/36'">
                         <span>${p.ign}</span>
                     </div>
-                `).join('') : `<div class="empty">No players</div>`;
+                `).join('') : `<div class="empty-slot">No players</div>`;
 
-                grid.innerHTML += `
+                containerDiv.innerHTML += `
                     <div class="tier-column">
                         <div class="tier-header">Tier ${tier}</div>
-                        <div class="tier-players">${rows}</div>
+                        <div class="tier-players-list">${rowsHTML}</div>
                     </div>
                 `;
             });
-            container.appendChild(grid);
+            container.appendChild(containerDiv);
         }
     }
 

@@ -5,101 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AS PvP TierList</title>
     <style>
-        body { background: #090b10; color: #ffffff; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        h1 { text-align: center; color: #60a5fa; margin-bottom: 5px; }
-        p { text-align: center; color: #94a3b8; margin-bottom: 25px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0b0f17; color: #fff; padding: 15px; }
+        .container { max-width: 1400px; margin: 0 auto; }
         
-        .controls { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #131722; padding: 15px; border-radius: 10px; }
-        .tabs button { background: #1e2530; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 5px; }
-        .tabs button.active { background: #3b82f6; }
+        header { text-align: center; padding: 20px 0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        h1 { color: #f59e0b; font-size: 2.2rem; margin-bottom: 5px; }
+        p { color: #94a3b8; font-size: 0.95rem; }
+
+        /* Mode Selection Tabs */
+        .mode-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
+        .mode-btn { background: #161b22; color: #94a3b8; border: 1px solid rgba(255,255,255,0.08); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.2s; }
+        .mode-btn.active { background: #f59e0b; color: #000; border-color: #f59e0b; }
+
+        /* MCTiers Style Columns Grid */
+        .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; align-items: start; }
+        .tier-column { background: #111622; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; }
         
-        .player-card { background: #131722; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .player-left { display: flex; align-items: center; gap: 15px; }
-        .rank { font-size: 1.2rem; font-weight: bold; width: 35px; height: 35px; background: #1e2530; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #fbbf24; }
-        .avatar { width: 40px; height: 40px; border-radius: 6px; }
-        .info h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
-        .points { font-size: 0.85rem; color: #34d399; }
-        
-        .badges { display: flex; gap: 6px; }
-        .badge { background: rgba(59,130,246,0.2); border: 1px solid #3b82f6; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; color: #60a5fa; font-weight: bold; }
+        .tier-header { padding: 12px; text-align: center; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+        .ht1 { color: #ef4444; border-bottom: 3px solid #ef4444; }
+        .lt1 { color: #f97316; border-bottom: 3px solid #f97316; }
+        .ht2 { color: #eab308; border-bottom: 3px solid #eab308; }
+        .lt2 { color: #84cc16; border-bottom: 3px solid #84cc16; }
+        .ht3 { color: #06b6d4; border-bottom: 3px solid #06b6d4; }
+        .lt3 { color: #3b82f6; border-bottom: 3px solid #3b82f6; }
+
+        .player-list { padding: 10px; display: flex; flex-direction: column; gap: 8px; max-height: 500px; overflow-y: auto; }
+        .player-row { display: flex; align-items: center; gap: 10px; background: #1a2130; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); }
+        .player-row img { width: 32px; height: 32px; border-radius: 6px; background: #000; }
+        .player-row span { font-size: 0.95rem; font-weight: 600; color: #e2e8f0; }
+
+        .empty-text { color: #475569; text-align: center; font-size: 0.85rem; padding: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>⚔️ AS PvP TierList</h1>
-    <p>Official Competitive Rankings</p>
+    <header>
+        <h1>⚔️ AS PvP TierList</h1>
+        <p>Official Competitive Tier Columns</p>
+    </header>
 
-    <div class="controls">
-        <div class="tabs" id="modeTabs">
-            <button class="active" onclick="setMode('overall', this)">Overall</button>
-            <button onclick="setMode('Sword', this)">Sword</button>
-            <button onclick="setMode('Axe', this)">Axe</button>
-            <button onclick="setMode('Mace', this)">Mace</button>
-        </div>
+    <!-- Gamemode Tabs -->
+    <div class="mode-bar" id="modeBar">
+        <button class="mode-btn active" onclick="changeMode('Sword', this)">⚔️ Sword</button>
+        <button class="mode-btn" onclick="changeMode('Axe', this)">🪓 Axe</button>
+        <button class="mode-btn" onclick="changeMode('Mace', this)">🔨 Mace</button>
+        <button class="mode-btn" onclick="changeMode('NethPot', this)">🧪 NethPot</button>
     </div>
 
-    <div id="leaderboard"></div>
+    <!-- Columns Container -->
+    <div class="tier-grid" id="tierGrid"></div>
 </div>
 
 <script>
-    const pointsMap = { "HT1": 60, "LT1": 45, "HT2": 30, "LT2": 20, "HT3": 10, "LT3": 6 };
-    
-    const players = [
-        { ign: "Death24", tiers: { "Sword": "LT1", "Axe": "HT2", "Mace": "LT2" } },
-        { ign: "Sifat", tiers: { "Sword": "HT2", "Axe": "LT1", "NethPot": "HT3" } },
-        { ign: "Technoblade", tiers: { "Sword": "HT1", "Axe": "HT1" } }
+    // প্লেয়ারদের ডাটা (এখানে নতুন প্লেয়ার ও টিয়ার যুক্ত করতে পারবে)
+    const playersData = [
+        { ign: "Death24", tiers: { Sword: "LT1", Axe: "HT2", Mace: "LT2" } },
+        { ign: "Sifat", tiers: { Sword: "HT2", Axe: "LT1", NethPot: "HT3" } },
+        { ign: "Technoblade", tiers: { Sword: "HT1", Axe: "HT1" } },
+        { ign: "Dream", tiers: { Sword: "LT2", Axe: "HT3" } }
     ];
 
-    let currentMode = 'overall';
+    let currentMode = 'Sword';
+    const tiers = ["HT1", "LT1", "HT2", "LT2", "HT3", "LT3"];
 
-    function setMode(mode, btn) {
+    function changeMode(mode, btn) {
         currentMode = mode;
-        document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        render();
+        renderColumns();
     }
 
-    function render() {
-        const container = document.getElementById('leaderboard');
-        container.innerHTML = '';
+    function renderColumns() {
+        const grid = document.getElementById('tierGrid');
+        grid.innerHTML = '';
 
-        let list = players.map(p => {
-            let pts = 0;
-            if (currentMode === 'overall') {
-                for (let m in p.tiers) pts += pointsMap[p.tiers[m]] || 0;
-            } else {
-                pts = pointsMap[p.tiers[currentMode]] || 0;
-            }
-            return { ...p, pts };
-        }).filter(p => p.pts > 0).sort((a, b) => b.pts - a.pts);
+        tiers.forEach(tier => {
+            // ওই মোডে নির্দিষ্ট টিয়ারের প্লেয়ারদের ফিল্টার করা
+            const filtered = playersData.filter(p => p.tiers[currentMode] === tier);
 
-        list.forEach((p, idx) => {
-            let badges = '';
-            for (let m in p.tiers) {
-                if (currentMode === 'overall' || currentMode === m) {
-                    badges += `<div class="badge">${m}: ${p.tiers[m]}</div>`;
-                }
-            }
-
-            container.innerHTML += `
-                <div class="player-card">
-                    <div class="player-left">
-                        <div class="rank">#${idx + 1}</div>
-                        <img class="avatar" src="https://mc-heads.net/avatar/${p.ign}/40" onerror="this.src='https://mc-heads.net/avatar/Steve/40'">
-                        <div class="info">
-                            <h3>${p.ign}</h3>
-                            <div class="points">Points: ${p.pts}</div>
-                        </div>
+            let playersHTML = '';
+            if (filtered.length > 0) {
+                playersHTML = filtered.map(p => `
+                    <div class="player-row">
+                        <img src="https://mc-heads.net/avatar/${p.ign}/32" onerror="this.src='https://mc-heads.net/avatar/Steve/32'">
+                        <span>${p.ign}</span>
                     </div>
-                    <div class="badges">${badges}</div>
+                `).join('');
+            } else {
+                playersHTML = `<div class="empty-text">No players</div>`;
+            }
+
+            grid.innerHTML += `
+                <div class="tier-column">
+                    <div class="tier-header ${tier.toLowerCase()}">Tier ${tier}</div>
+                    <div class="player-list">${playersHTML}</div>
                 </div>
             `;
         });
     }
 
-    render();
+    renderColumns();
 </script>
 
 </body>

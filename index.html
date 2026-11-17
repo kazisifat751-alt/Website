@@ -3,375 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AS PvP TierList • Official Rankings</title>
+    <title>AS PvP TierList • Official Competitive Rankings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0f1117;
-            --card-bg: #181b24;
-            --card-hover: #212532;
-            --accent: #3b82f6;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
+            --bg-main: #090b10;
+            --card-bg: rgba(22, 27, 38, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
             --gold: #fbbf24;
-            --silver: #e5e7eb;
-            --bronze: #d97706;
+            --silver: #e2e8f0;
+            --bronze: #f97316;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-main);
             color: var(--text-main);
             min-height: 100vh;
-            padding-bottom: 50px;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 60px;
         }
 
-        /* Header */
-        header {
-            background: linear-gradient(180deg, #161923 0%, var(--bg-dark) 100%);
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom: 1px solid #262a36;
-        }
-
-        header h1 {
-            font-size: 2.2rem;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, #60a5fa, #34d399);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .server-badge {
-            display: inline-block;
-            margin-top: 12px;
-            background: #1f2430;
-            border: 1px solid #2e3446;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #60a5fa;
-            cursor: pointer;
-        }
-
-        /* Controls (Tabs & Search) */
-        .container {
-            max-width: 900px;
-            margin: 25px auto;
-            padding: 0 15px;
-        }
-
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-
-        .tab-btn {
-            background: var(--card-bg);
-            color: var(--text-muted);
-            border: 1px solid #2a2f3d;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-
-        .tab-btn:hover, .tab-btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        .search-box {
-            background: var(--card-bg);
-            border: 1px solid #2a2f3d;
-            padding: 9px 14px;
-            border-radius: 8px;
-            color: white;
-            width: 100%;
-            max-width: 260px;
-            outline: none;
-        }
-
-        .search-box:focus {
-            border-color: var(--accent);
-        }
-
-        /* Leaderboard Rows */
-        .leaderboard {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .player-card {
-            background: var(--card-bg);
-            border: 1px solid #242836;
-            border-radius: 12px;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: 0.2s;
-        }
-
-        .player-card:hover {
-            background: var(--card-hover);
-            transform: translateY(-2px);
-        }
-
-        .player-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .rank {
-            font-size: 1.2rem;
-            font-weight: 800;
-            width: 36px;
-            text-align: center;
-            color: var(--text-muted);
-        }
-
-        .rank-1 { color: var(--gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
-        .rank-2 { color: var(--silver); }
-        .rank-3 { color: var(--bronze); }
-
-        .skin-head {
-            width: 42px;
-            height: 42px;
-            border-radius: 6px;
-            background: #262b38;
-        }
-
-        .player-info h3 {
-            font-size: 1.05rem;
-            margin-bottom: 3px;
-        }
-
-        .points {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .points span {
-            color: #34d399;
-            font-weight: bold;
-        }
-
-        /* Tier Badges */
-        .tiers-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: flex-end;
-        }
-
-        .tier-badge {
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: #252a38;
-            border: 1px solid #32394b;
-        }
-
-        .HT1, .LT1 { border-color: #fbbf24; color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
-        .HT2, .LT2 { border-color: #a855f7; color: #c084fc; background: rgba(168, 85, 247, 0.1); }
-        .HT3, .LT3 { border-color: #3b82f6; color: #60a5fa; background: rgba(59, 130, 246, 0.1); }
-        .HT4, .LT4 { border-color: #10b981; color: #34d399; background: rgba(16, 185, 129, 0.1); }
-        .HT5, .LT5 { border-color: #6b7280; color: #9ca3af; }
-
-        @media (max-width: 600px) {
-            .player-card {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            .tiers-list {
-                justify-content: flex-start;
-            }
-            .search-box {
-                max-width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>⚔️ AS PvP TierList</h1>
-    <p>Official Competitive Minecraft PvP Rankings</p>
-    <div class="server-badge" onclick="copyIP()">🌐 IP: <strong>alwto.net</strong> (Click to Copy)</div>
-</header>
-
-<div class="container">
-    <div class="controls">
-        <div class="tabs">
-            <button class="tab-btn active" onclick="filterMode('overall', this)">🏆 Overall</button>
-            <button class="tab-btn" onclick="filterMode('Sword', this)">⚔️ Sword</button>
-            <button class="tab-btn" onclick="filterMode('Axe', this)">🪓 Axe</button>
-            <button class="tab-btn" onclick="filterMode('Mace', this)">🔨 Mace</button>
-            <button class="tab-btn" onclick="filterMode('NethPot', this)">🧪 NethPot</button>
-        </div>
-        <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search player IGN..." onkeyup="renderLeaderboard()">
-    </div>
-
-    <div class="leaderboard" id="leaderboard"></div>
-</div>
-
-<script>
-    // ⚙️ ১. পয়েন্ট সিস্টেম (আসল MCTiers-এর মতো)
-    const TIER_POINTS = {
-        "HT1": 60, "LT1": 45,
-        "HT2": 30, "LT2": 20,
-        "HT3": 10, "LT3": 6,
-        "HT4": 4,  "LT4": 3,
-        "HT5": 2,  "LT5": 1
-    };
-
-    // ⚙️ ২. প্লেয়ারদের ডাটা (এখানে নতুন প্লেয়ার বা রেজাল্ট যোগ করবে)
-    const playersData = [
-        {
-            ign: "Death24", // প্লেয়ারের Minecraft IGN
-            tiers: {
-                Sword: "LT1",
-                Axe: "HT2",
-                Mace: "LT2"
-            }
-        },
-        {
-            ign: "Sifat",
-            tiers: {
-                Sword: "HT2",
-                Axe: "LT1",
-                NethPot: "HT3"
-            }
-        },
-        {
-            ign: "Dream",
-            tiers: {
-                Sword: "LT2",
-                Axe: "HT3",
-                Mace: "LT3"
-            }
-        },
-        {
-            ign: "Technoblade",
-            tiers: {
-                Sword: "HT1",
-                Axe: "HT1"
-            }
-        }
-    ];
-
-    let currentMode = 'overall';
-
-    function calculatePoints(player, mode) {
-        if (mode === 'overall') {
-            let total = 0;
-            for (let m in player.tiers) {
-                total += TIER_POINTS[player.tiers[m]] || 0;
-            }
-            return total;
-        } else {
-            const t = player.tiers[mode];
-            return t ? (TIER_POINTS[t] || 0) : 0;
-        }
-    }
-
-    function filterMode(mode, btn) {
-        currentMode = mode;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderLeaderboard();
-    }
-
-    function renderLeaderboard() {
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        const container = document.getElementById('leaderboard');
-        container.innerHTML = '';
-
-        // ফিল্টার এবং পয়েন্ট অনুযায়ী বড় থেকে ছোট সাজানো
-        let sorted = playersData
-            .map(p => ({ ...p, pts: calculatePoints(p, currentMode) }))
-            .filter(p => p.pts > 0 && p.ign.toLowerCase().includes(search))
-            .sort((a, b) => b.pts - a.pts);
-
-        if (sorted.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color:#9ca3af; margin-top:30px;">No players found in this category.</p>';
-            return;
-        }
-
-        sorted.forEach((player, index) => {
-            const rank = index + 1;
-            const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
-
-            let badgesHTML = '';
-            for (let mode in player.tiers) {
-                if (currentMode === 'overall' || currentMode === mode) {
-                    const tier = player.tiers[mode];
-                    badgesHTML += `<div class="tier-badge ${tier}"><span>${mode}:</span> <strong>${tier}</strong></div>`;
-                }
-            }
-
-            const card = `
-                <div class="player-card">
-                    <div class="player-left">
-                        <div class="rank ${rankClass}">#${rank}</div>
-                        <img class="skin-head" src="https://mc-heads.net/avatar/${player.ign}/64" alt="${player.ign}" onerror="this.src='https://mc-heads.net/avatar/Steve/64'">
-                        <div class="player-info">
-                            <h3>${player.ign}</h3>
-                            <div class="points"><span>${player.pts}</span> Points</div>
-                        </div>
-                    </div>
-                    <div class="tiers-list">
-                        ${badgesHTML}
-                    </div>
-                </div>
-            `;
-            container.innerHTML += card;
-        });
-    }
-
-    function copyIP() {
-        navigator.clipboard.writeText('alwto.net');
-        alert('✅ Server IP copied: alwto.net');
-    }
-
-    // পেজ লোড হলে র‍্যাংকিং দেখাবে
-    renderLeaderboard();
-</script>
-
-</body>
-              </html>
-              
+        /* Ambient Colorful Background Glows */
+        .bg-glow-1, .bg-glow-2 {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(130px);
+            z-index: -1;
+            opacity: 0.35;
+            pointer-events
